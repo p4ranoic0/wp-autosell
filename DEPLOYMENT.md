@@ -1,0 +1,138 @@
+# Guía de Despliegue en DigitalOcean App Platform
+
+Esta guía te llevará paso a paso para desplegar WordPress en DigitalOcean App Platform con MySQL externo.
+
+## Paso 1: Preparación (antes de empezar)
+
+Asegúrate de tener:
+- ✅ Acceso al MySQL (host, puerto, db, user, pass)
+- ✅ MySQL configurado para aceptar conexiones desde Internet
+- ✅ Este repositorio ya está en GitHub
+
+## Paso 2: Crear la App en DigitalOcean
+
+1. Entra a DigitalOcean → **Create** → **Apps**
+2. Selecciona **GitHub** y conecta este repositorio
+3. Elige la rama `main` o `master`
+4. DigitalOcean detectará automáticamente PHP (por `index.php`)
+5. Selecciona el plan:
+   - **Recomendado**: Basic (1 vCPU / 512MB RAM) - $5/mes
+   - Para más tráfico: Professional (1 vCPU / 1GB RAM) - $12/mes
+
+## Paso 3: Configurar Variables de Entorno
+
+En **Settings** → tu componente web → **Environment Variables**, agrega:
+
+### Variables Obligatorias
+
+| Variable | Valor de Ejemplo | Descripción | Encrypt |
+|----------|------------------|-------------|---------|
+| `DB_NAME` | `wordpress_db` | Nombre de tu base de datos | No |
+| `DB_USER` | `wp_user` | Usuario de MySQL | No |
+| `DB_PASSWORD` | `tu_contraseña_segura` | Contraseña de MySQL | **Sí** ✅ |
+| `DB_HOST` | `tu-host.db.ondigitalocean.com:25060` | Host y puerto de MySQL | No |
+| `DB_PREFIX` | `wp_` | Prefijo de tablas (opcional) | No |
+| `WP_DEBUG` | `false` | Debug mode (false en producción) | No |
+
+### Variables de Seguridad (Recomendadas)
+
+Genera valores únicos en: https://api.wordpress.org/secret-key/1.1/salt/
+
+Copia y pega los valores generados para:
+
+| Variable | Encrypt |
+|----------|---------|
+| `AUTH_KEY` | **Sí** ✅ |
+| `SECURE_AUTH_KEY` | **Sí** ✅ |
+| `LOGGED_IN_KEY` | **Sí** ✅ |
+| `NONCE_KEY` | **Sí** ✅ |
+| `AUTH_SALT` | **Sí** ✅ |
+| `SECURE_AUTH_SALT` | **Sí** ✅ |
+| `LOGGED_IN_SALT` | **Sí** ✅ |
+| `NONCE_SALT` | **Sí** ✅ |
+
+**Importante**: Marca como **Encrypted** todas las contraseñas y keys sensibles.
+
+## Paso 4: Deploy
+
+1. Haz clic en **Save** para guardar las variables
+2. La app se desplegará automáticamente
+3. Espera 5-10 minutos para el primer deploy
+
+## Paso 5: Instalar WordPress
+
+1. Cuando termine el deploy, abre la URL que te da App Platform
+   - Ejemplo: `https://tu-app-xxxxx.ondigitalocean.app`
+2. Verás el instalador de WordPress
+3. Completa la información:
+   - Título del sitio
+   - Usuario admin
+   - Email
+4. ¡Listo! Accede a `/wp-admin`
+
+## Paso 6: (Opcional) Configurar Dominio Personalizado
+
+### Opción A: Dominio completo
+Si quieres `tudominio.com`:
+1. Ve a **Settings** → **Domains**
+2. Agrega tu dominio
+3. Configura los DNS según las instrucciones
+
+### Opción B: Subdirectorio `/landing`
+Si tu dominio principal está en otro servidor (Angular/Java) y quieres `tudominio.com/landing`:
+
+Configura un **reverse proxy** en tu Nginx actual:
+
+```nginx
+location /landing {
+    proxy_pass https://tu-app-xxxxx.ondigitalocean.app;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+}
+```
+
+## Notas Importantes
+
+### Archivos Subidos (Media)
+⚠️ App Platform tiene **almacenamiento efímero**. Los archivos subidos se pueden perder en cada deploy.
+
+**Solución**: Usar DigitalOcean Spaces (compatible con S3)
+- Crea un Space en DigitalOcean
+- Instala el plugin **WP Offload Media Lite** en WordPress
+- Configura las credenciales del Space
+
+### Permisos de MySQL
+Asegúrate de que tu MySQL:
+- Acepta conexiones desde App Platform
+- El usuario tiene todos los permisos necesarios:
+```sql
+GRANT ALL PRIVILEGES ON wordpress_db.* TO 'wp_user'@'%';
+FLUSH PRIVILEGES;
+```
+
+### Debugging
+Si algo falla:
+1. Revisa los **Runtime Logs** en App Platform
+2. Habilita temporalmente `WP_DEBUG=true`
+3. Verifica que las variables de entorno están configuradas
+
+## Troubleshooting Común
+
+### "Error estableciendo conexión con la base de datos"
+- Verifica `DB_HOST`, `DB_USER`, `DB_PASSWORD` y `DB_NAME`
+- Asegúrate de que MySQL acepta conexiones remotas
+- Verifica el puerto en `DB_HOST` (ejemplo: `:25060`)
+
+### La página se ve sin estilos / redirige mal
+- Verifica que el dominio esté bien configurado en WordPress
+- El código ya incluye soporte para HTTPS detrás de proxy
+
+### "PHP version too old"
+- App Platform usa PHP 8.x por defecto
+- WordPress requiere PHP 7.4+
+- Debería funcionar sin cambios
+
+## ¿Necesitas ayuda?
+Revisa los logs en App Platform o contacta al equipo de desarrollo.
