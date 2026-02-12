@@ -17,7 +17,6 @@ wp-config-local.php
 # Backup files
 *.sql
 *.sql.gz
-*.bak
 *~
 
 # Environment variables (if you use .env file)
@@ -37,7 +36,6 @@ Thumbs.db
 *.swo
 *.swn
 *.bak
-*.tmp
 *.temp
 
 # Logs
@@ -55,7 +53,6 @@ node_modules/
 # Temporary files
 tmp/
 temp/
-*.tmp
 
 # Build artifacts
 dist/

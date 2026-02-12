@@ -22,6 +22,11 @@ define( 'DB_PASSWORD', getenv('DB_PASSWORD') ?: '' );
 /** Database hostname */
 define( 'DB_HOST', getenv('DB_HOST') ?: '127.0.0.1' );
 
+/**
+ * IMPORTANT: In production, you MUST set all DB_* environment variables.
+ * The default values above are only for local development.
+ */
+
 /** Database charset to use in creating database tables. */
 define( 'DB_CHARSET', 'utf8' );
 
@@ -36,6 +41,9 @@ define( 'DB_COLLATE', '' );
  *
  * You can change these at any point in time to invalidate all existing cookies.
  * This will force all users to have to log in again.
+ *
+ * CRITICAL: In production, you MUST set unique values for all 8 keys via environment variables.
+ * Using the default placeholders compromises security and makes your site vulnerable to attacks.
  *
  * @since 2.6.0
  */
