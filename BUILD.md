@@ -48,8 +48,9 @@ The following environment variables MUST be configured in DigitalOcean App Platf
 - `DB_NAME` - Database name
 - `DB_USER` - Database user
 - `DB_PASSWORD` - Database password (encrypted)
-- `DB_HOST` - Database host with port (e.g., `host:3306`)
+- `DB_HOST` - Database host with port (e.g., `host:25060`)
 - `DB_PREFIX` - Table prefix (default: `wp_`)
+- `DB_SSL` - Set to `REQUIRED` or `true` for DigitalOcean Managed MySQL
 - `WP_DEBUG` - Debug mode (true/false)
 
 **Required (Security)**:

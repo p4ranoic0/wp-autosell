@@ -19,7 +19,7 @@ define( 'DB_USER', getenv('DB_USER') ?: 'root' );
 /** Database password */
 define( 'DB_PASSWORD', getenv('DB_PASSWORD') ?: '' );
 
-/** Database hostname */
+/** Database hostname - supports host:port format */
 define( 'DB_HOST', getenv('DB_HOST') ?: '127.0.0.1' );
 
 /**
@@ -32,6 +32,12 @@ define( 'DB_CHARSET', 'utf8' );
 
 /** The database collate type. Don't change this if in doubt. */
 define( 'DB_COLLATE', '' );
+
+/** MySQL SSL/TLS Configuration for DigitalOcean Managed Database */
+$db_ssl = getenv('DB_SSL');
+if ( $db_ssl && in_array( strtolower( trim( $db_ssl ) ), array( 'true', 'required' ), true ) ) {
+	define( 'MYSQL_CLIENT_FLAGS', MYSQLI_CLIENT_SSL );
+}
 
 /**#@+
  * Authentication unique keys and salts.
