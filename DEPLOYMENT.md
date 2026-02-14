@@ -2,6 +2,21 @@
 
 Esta guía te llevará paso a paso para desplegar WordPress en DigitalOcean App Platform con MySQL externo.
 
+## 🚀 Inicio Rápido
+
+**Lo que necesitas hacer OBLIGATORIAMENTE:**
+
+1. ✅ **Crear la app en DigitalOcean** y conectar este repositorio
+2. ✅ **Configurar las variables de entorno** (DB_NAME, DB_USER, DB_PASSWORD, DB_HOST) + claves de seguridad
+3. ✅ **Desplegar** - el script automático descargará e instalará WordPress
+
+**Lo que NO necesitas hacer:**
+- ❌ NO subir WordPress manualmente
+- ❌ NO configurar wp-config.php (ya está configurado)
+- ❌ NO instalar dependencias manualmente
+
+---
+
 ## ⚠️ Importante: Instalación Automática de WordPress
 
 Este repositorio incluye un **script de construcción automático** (`build.sh`) que:

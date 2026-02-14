@@ -13,24 +13,26 @@ services:
     routes:
       - path: /
     envs:
+      # Database Configuration - REQUIRED: Must be set in App Platform UI
       - key: DB_NAME
         scope: RUN_TIME
-        type: SECRET
       - key: DB_USER
         scope: RUN_TIME
-        type: SECRET
       - key: DB_PASSWORD
         scope: RUN_TIME
         type: SECRET
       - key: DB_HOST
         scope: RUN_TIME
-        type: SECRET
+      # Optional: Database table prefix (defaults to wp_ if not set)
       - key: DB_PREFIX
         value: wp_
         scope: RUN_TIME
+      # Optional: WordPress debug mode (defaults to false if not set)
       - key: WP_DEBUG
         value: "false"
         scope: RUN_TIME
+      # WordPress Security Keys - REQUIRED: Must be set in App Platform UI
+      # Generate at: https://api.wordpress.org/secret-key/1.1/salt/
       - key: AUTH_KEY
         scope: RUN_TIME
         type: SECRET
