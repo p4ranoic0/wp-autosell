@@ -99,21 +99,65 @@ Una vez desplegada la app:
 
 ### 📚 Documentación
 
+- **[DIAGNOSTICS.md](DIAGNOSTICS.md)** - **🆕 GUÍA DE DIAGNÓSTICO** - Identifica y resuelve problemas de deployment
 - **[DEPLOYMENT.md](DEPLOYMENT.md)** - Guía completa paso a paso para desplegar
 - **[OPTIMIZACION_512MB.md](OPTIMIZACION_512MB.md)** - Optimización para recursos limitados
 - **[SOLUCION_RAPIDA.md](SOLUCION_RAPIDA.md)** - Solución rápida a errores comunes
 - **[BUILD.md](BUILD.md)** - Documentación técnica del proceso de build
 
+### 🩺 Herramientas de Diagnóstico
+
+Este repositorio incluye herramientas avanzadas para diagnosticar problemas de deployment:
+
+1. **Startup Diagnostics (Automático)**
+   - Se ejecuta al iniciar la aplicación
+   - Verifica entorno PHP, archivos, base de datos
+   - Resultados visibles en Runtime Logs
+
+2. **Health Check Endpoint**
+   - Accede a: `https://tu-app.ondigitalocean.app/health-check.php`
+   - Interfaz visual con verificaciones en tiempo real
+   - Muestra exactamente qué está fallando
+
+3. **PHP Info (Diagnóstico Detallado)**
+   - Accede a: `https://tu-app.ondigitalocean.app/phpinfo.php`
+   - Información completa de PHP y WordPress
+   - **IMPORTANTE: Eliminar después de usar**
+
 ### 🐛 Troubleshooting
 
-#### Error 500 en /wp-admin/install.php
+#### ¿No puedes iniciar WordPress o tienes errores de deployment?
 
-1. Accede a `https://tu-app.ondigitalocean.app/phpinfo.php` para diagnosticar
-2. Revisa los Runtime Logs en DigitalOcean (ahora muestran errores PHP)
-3. Verifica que todas las variables de entorno estén configuradas
-4. Consulta [OPTIMIZACION_512MB.md](OPTIMIZACION_512MB.md) para más detalles
+**Sigue estos pasos en orden:**
 
-El repositorio ya está optimizado, pero si tienes muchos plugins o tráfico alto, considera:
+1. **Revisa Build Logs** en DigitalOcean
+   - Busca: `✓ WordPress installation complete!`
+   - Si falla, el build tiene problemas
+
+2. **Revisa Runtime Logs** en DigitalOcean
+   - Busca: `✓✓✓ ALL CHECKS PASSED ✓✓✓`
+   - Verás diagnóstico automático al inicio
+
+3. **Accede al Health Check**
+   ```
+   https://tu-app.ondigitalocean.app/health-check.php
+   ```
+   - Te mostrará exactamente qué está mal
+   - Códigos de colores: Verde=OK, Amarillo=Advertencia, Rojo=Error
+
+4. **Consulta la guía completa**
+   - **[DIAGNOSTICS.md](DIAGNOSTICS.md)** tiene soluciones paso a paso para cada error
+
+#### Problemas Comunes
+
+- **Error 500**: Revisa Runtime Logs (ahora muestran errores PHP específicos)
+- **Cannot connect to database**: Verifica formato de DB_HOST (debe incluir puerto)
+- **Missing WordPress files**: Force Rebuild en DigitalOcean
+- **Missing environment variables**: Configúralas en App Settings
+
+#### Optimización
+
+El repositorio ya está optimizado para 512MB RAM, pero si tienes muchos plugins o tráfico alto, considera:
 - Upgrade a plan con 1GB RAM ($12/mes)
 - Usar plugin de caché (WP Super Cache)
 - Optimizar imágenes antes de subir
