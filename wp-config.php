@@ -20,7 +20,7 @@ define( 'DB_USER', getenv('DB_USER') ?: 'root' );
 define( 'DB_PASSWORD', getenv('DB_PASSWORD') ?: '' );
 
 /** Database hostname - supports host:port format */
-define( 'DB_HOST', getenv('DB_HOST') ?: '127.0.0.1:3306' );
+define( 'DB_HOST', getenv('DB_HOST') ?: '127.0.0.1' );
 
 /**
  * IMPORTANT: In production, you MUST set all DB_* environment variables.
@@ -34,7 +34,8 @@ define( 'DB_CHARSET', 'utf8' );
 define( 'DB_COLLATE', '' );
 
 /** MySQL SSL/TLS Configuration for DigitalOcean Managed Database */
-if ( getenv('DB_SSL') === 'true' || getenv('DB_SSL') === 'REQUIRED' ) {
+$db_ssl = getenv('DB_SSL');
+if ( $db_ssl && ( strtolower( trim( $db_ssl ) ) === 'true' || strtoupper( trim( $db_ssl ) ) === 'REQUIRED' ) ) {
 	define( 'MYSQL_CLIENT_FLAGS', MYSQLI_CLIENT_SSL );
 }
 
