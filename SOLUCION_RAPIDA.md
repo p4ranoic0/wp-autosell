@@ -29,6 +29,7 @@ Este error ocurre porque **faltan las variables de entorno** en DigitalOcean App
    | `DB_USER` | Usuario de MySQL | No |
    | `DB_PASSWORD` | Contraseña de MySQL | ✅ Sí |
    | `DB_HOST` | Host de MySQL con puerto (ej: `host:25060`) | No |
+   | `DB_SSL` | `REQUIRED` o `true` para DigitalOcean Managed MySQL | No |
 
 4. **Agrega las Claves de Seguridad de WordPress**
    

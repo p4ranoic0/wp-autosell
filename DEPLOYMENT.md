@@ -60,6 +60,7 @@ En **Settings** → tu componente web → **Environment Variables**, agrega:
 | `DB_PASSWORD` | `tu_contraseña_segura` | Contraseña de MySQL | **Sí** ✅ |
 | `DB_HOST` | `tu-host.db.ondigitalocean.com:25060` | Host y puerto de MySQL | No |
 | `DB_PREFIX` | `wp_` | Prefijo de tablas (opcional) | No |
+| `DB_SSL` | `REQUIRED` | SSL/TLS para DigitalOcean Managed MySQL | No |
 | `WP_DEBUG` | `false` | Debug mode (false en producción) | No |
 
 ### Variables de Seguridad (Altamente Recomendadas)
