@@ -10,20 +10,20 @@ services:
       repo: p4ranoic0/wp-autosell
       branch: main
       deploy_on_push: true
-    
+
     # Build configuration
     build_command: bash build.sh
-    
+
     # Environment
     environment_slug: php
-    
+
     # HTTP configuration
     http_port: 8080
-    
+
     # Instance configuration
     instance_count: 1
     instance_size_slug: basic-xxs
-    
+
     # Health check - Uses ping.php which does NOT require database
     health_check:
       http_path: /ping.php
@@ -32,7 +32,7 @@ services:
       timeout_seconds: 5
       success_threshold: 1
       failure_threshold: 5
-    
+
     # Environment variables - must be configured in DigitalOcean UI
     envs:
       # Database Configuration (REQUIRED: Must be set in App Platform UI)
@@ -52,7 +52,7 @@ services:
       - key: DB_PREFIX
         value: wp_
         scope: RUN_TIME
-      
+
       # WordPress Security Keys - REQUIRED: Must be set in App Platform UI
       # Generate at: https://api.wordpress.org/secret-key/1.1/salt/
       - key: AUTH_KEY
@@ -79,7 +79,7 @@ services:
       - key: NONCE_SALT
         scope: RUN_TIME
         type: SECRET
-      
+
       # Optional: WordPress debug mode (defaults to false if not set)
       - key: WP_DEBUG
         value: "false"
