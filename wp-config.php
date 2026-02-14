@@ -38,6 +38,8 @@ $db_ssl = getenv('DB_SSL');
 if ( $db_ssl && in_array( strtolower( trim( $db_ssl ) ), array( 'true', 'required' ), true ) ) {
 	if ( defined( 'MYSQLI_CLIENT_SSL' ) ) {
 		define( 'MYSQL_CLIENT_FLAGS', MYSQLI_CLIENT_SSL );
+	} else {
+		error_log( 'DB_SSL is enabled, but MYSQLI_CLIENT_SSL is not available in this PHP runtime.' );
 	}
 }
 
