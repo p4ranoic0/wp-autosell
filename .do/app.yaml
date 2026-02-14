@@ -24,14 +24,14 @@ services:
     instance_count: 1
     instance_size_slug: basic-xxs
     
-    # Health check
+    # Health check - More tolerant for installation phase
     health_check:
       http_path: /
-      initial_delay_seconds: 30
-      period_seconds: 10
-      timeout_seconds: 5
+      initial_delay_seconds: 60
+      period_seconds: 15
+      timeout_seconds: 10
       success_threshold: 1
-      failure_threshold: 3
+      failure_threshold: 5
     
     # Environment variables - must be configured in DigitalOcean UI
     envs:

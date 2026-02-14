@@ -82,6 +82,15 @@ $table_prefix = getenv('DB_PREFIX') ?: 'wp_';
  * @link https://developer.wordpress.org/advanced-administration/debug/debug-wordpress/
  */
 define( 'WP_DEBUG', (getenv('WP_DEBUG') === 'true') );
+define( 'WP_DEBUG_LOG', true );
+define( 'WP_DEBUG_DISPLAY', false );
+
+/**
+ * Memory optimization for 512MB RAM environment
+ * Limit WordPress memory usage to work within available resources
+ */
+define( 'WP_MEMORY_LIMIT', '64M' );
+define( 'WP_MAX_MEMORY_LIMIT', '96M' );
 
 /* Add any custom values between this line and the "stop editing" line. */
 
@@ -91,6 +100,20 @@ define( 'WP_DEBUG', (getenv('WP_DEBUG') === 'true') );
  */
 if ( ! empty( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https' ) {
 	$_SERVER['HTTPS'] = 'on';
+}
+
+/**
+ * Auto-repair database tables on installation issues
+ * Helps with 500 errors during initial setup
+ */
+define( 'WP_AUTO_UPDATE_CORE', 'minor' );
+
+/**
+ * Increase timeouts for slow database connections
+ * Helpful on resource-constrained environments
+ */
+if ( ! defined( 'DB_TIMEOUT' ) ) {
+	define( 'DB_TIMEOUT', 10 );
 }
 
 /* That's all, stop editing! Happy publishing. */
