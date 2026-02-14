@@ -1,0 +1,59 @@
+name: wp-autosell
+services:
+  - name: web
+    github:
+      branch: main
+      deploy_on_push: true
+      repo: p4ranoic0/wp-autosell
+    build_command: bash build.sh
+    environment_slug: php
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    http_port: 8080
+    routes:
+      - path: /
+    envs:
+      # Database Configuration - REQUIRED: Must be set in App Platform UI
+      - key: DB_NAME
+        scope: RUN_TIME
+      - key: DB_USER
+        scope: RUN_TIME
+      - key: DB_PASSWORD
+        scope: RUN_TIME
+        type: SECRET
+      - key: DB_HOST
+        scope: RUN_TIME
+      # Optional: Database table prefix (defaults to wp_ if not set)
+      - key: DB_PREFIX
+        value: wp_
+        scope: RUN_TIME
+      # Optional: WordPress debug mode (defaults to false if not set)
+      - key: WP_DEBUG
+        value: "false"
+        scope: RUN_TIME
+      # WordPress Security Keys - REQUIRED: Must be set in App Platform UI
+      # Generate at: https://api.wordpress.org/secret-key/1.1/salt/
+      - key: AUTH_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: SECURE_AUTH_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: LOGGED_IN_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: NONCE_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: AUTH_SALT
+        scope: RUN_TIME
+        type: SECRET
+      - key: SECURE_AUTH_SALT
+        scope: RUN_TIME
+        type: SECRET
+      - key: LOGGED_IN_SALT
+        scope: RUN_TIME
+        type: SECRET
+      - key: NONCE_SALT
+        scope: RUN_TIME
+        type: SECRET

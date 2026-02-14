@@ -5,6 +5,13 @@ Landing de autosell para potenciar las ventas
 
 Este repositorio está configurado para ser desplegado en DigitalOcean App Platform con MySQL externo.
 
+### ⚠️ Cambios Importantes
+
+**Instalación Automática de WordPress**:
+- El repositorio NO incluye los directorios de WordPress (`wp-includes/`, `wp-admin/`, `wp-content/`)
+- Durante el deploy, el script `build.sh` descarga automáticamente WordPress y configura todo
+- Las variables de entorno son **OBLIGATORIAS** para el funcionamiento correcto
+
 ### Requisitos previos
 
 - Acceso a un servidor MySQL (puede ser de DigitalOcean Managed Database u otro proveedor)
