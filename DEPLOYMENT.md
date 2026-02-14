@@ -2,6 +2,18 @@
 
 Esta guía te llevará paso a paso para desplegar WordPress en DigitalOcean App Platform con MySQL externo.
 
+## ⚠️ NOTA IMPORTANTE: Recursos Limitados (512MB RAM)
+
+Si tienes un VPS o plan con **512MB de RAM**, consulta primero:
+👉 **[OPTIMIZACION_512MB.md](OPTIMIZACION_512MB.md)** - Configuración optimizada para recursos limitados
+
+Este repositorio ya está optimizado para funcionar con 512MB RAM:
+- ✅ PHP memory_limit reducido a 96M (4 workers × 96M = 384MB)
+- ✅ WordPress memory_limit en 64M/96M
+- ✅ Upload limitado a 32M
+- ✅ Health checks más tolerantes
+- ✅ Debug habilitado para diagnóstico
+
 ## 🚀 Inicio Rápido
 
 **Lo que necesitas hacer OBLIGATORIAMENTE:**
@@ -167,6 +179,44 @@ Si algo falla:
 4. Verifica que **todas** las variables de entorno están configuradas (incluyendo DB_SSL)
 
 ## Troubleshooting Común
+
+### Error 500 en /wp-admin/install.php
+
+**Síntomas**:
+```
+GET /wp-admin/install.php HTTP/1.1" 500 2647
+```
+
+**Causas Comunes**:
+1. **Memoria insuficiente** (especialmente con 512MB RAM)
+2. Error de conexión a base de datos
+3. Variables de entorno mal configuradas
+4. Extensiones PHP faltantes
+
+**Solución**:
+1. **Verifica que tienes la configuración optimizada** (ya incluida en este repo):
+   - PHP memory_limit: 96M (ver `php.ini`, `.user.ini`)
+   - WordPress memory limits: 64M/96M (ver `wp-config.php`)
+   - Lee [OPTIMIZACION_512MB.md](OPTIMIZACION_512MB.md) para más detalles
+
+2. **Usa la herramienta de diagnóstico**:
+   - Accede a `https://tu-app.ondigitalocean.app/phpinfo.php`
+   - Verifica extensiones PHP, conexión DB, archivos WordPress
+   - ⚠️ ELIMINA este archivo después de diagnosticar
+
+3. **Revisa Runtime Logs** (ahora con errores visibles):
+   - Los errores PHP se muestran gracias a `display_errors = On`
+   - Busca "PHP Fatal error" o "PHP Warning"
+   - Identifica si es memoria, DB, o extensiones
+
+4. **Verifica variables de entorno**:
+   - Settings → Environment Variables
+   - Asegúrate de que DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_SSL estén configurados
+
+5. **Si es problema de memoria**:
+   - Los valores ya están optimizados para 512MB
+   - Considera upgrade a plan con 1GB RAM ($12/mes)
+   - O reduce plugins/temas hasta mínimo necesario
 
 ### "Failed to open stream: No such file or directory in wp-settings.php" o "Failed opening required '/workspace/wp-includes/version.php'"
 

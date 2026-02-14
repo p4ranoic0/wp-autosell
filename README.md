@@ -1,9 +1,20 @@
 # wp-autosell
 Landing de autosell para potenciar las ventas
 
-## Despliegue en DigitalOcean App Platform
+## 🚀 Despliegue en DigitalOcean App Platform
 
 Este repositorio está configurado para ser desplegado en DigitalOcean App Platform con MySQL externo.
+
+### ⚙️ Optimizado para Recursos Limitados
+
+✅ **Este repositorio está optimizado para funcionar con 512MB de RAM**:
+- PHP memory_limit: 96M (permite 4 workers sin agotar memoria)
+- WordPress memory limits: 64M normal / 96M admin
+- Upload límite: 32M (suficiente para imágenes)
+- Health checks tolerantes durante instalación
+- Debug habilitado para diagnóstico rápido
+
+📖 **Documentación específica**: [OPTIMIZACION_512MB.md](OPTIMIZACION_512MB.md)
 
 ### ⚠️ Cambios Importantes
 
@@ -80,6 +91,29 @@ Una vez desplegada la app:
 
 ### Notas importantes
 
+- **Recursos Limitados (512MB RAM)**: El repositorio está optimizado para funcionar con recursos mínimos. Si experimentas errores 500, consulta [OPTIMIZACION_512MB.md](OPTIMIZACION_512MB.md)
+- **Herramienta de Diagnóstico**: Incluye `phpinfo.php` para diagnosticar problemas. Accede a `/phpinfo.php` después del deploy y **elimínalo después de usar**.
 - **Archivos multimedia**: App Platform tiene almacenamiento efímero. Para archivos subidos (imágenes, etc.), considera usar DigitalOcean Spaces con un plugin de WordPress.
 - **Base de datos**: Asegúrate de que tu MySQL acepta conexiones desde App Platform.
 - El archivo `wp-config.php` lee de variables de entorno, por lo que es seguro comitirlo al repositorio.
+
+### 📚 Documentación
+
+- **[DEPLOYMENT.md](DEPLOYMENT.md)** - Guía completa paso a paso para desplegar
+- **[OPTIMIZACION_512MB.md](OPTIMIZACION_512MB.md)** - Optimización para recursos limitados
+- **[SOLUCION_RAPIDA.md](SOLUCION_RAPIDA.md)** - Solución rápida a errores comunes
+- **[BUILD.md](BUILD.md)** - Documentación técnica del proceso de build
+
+### 🐛 Troubleshooting
+
+#### Error 500 en /wp-admin/install.php
+
+1. Accede a `https://tu-app.ondigitalocean.app/phpinfo.php` para diagnosticar
+2. Revisa los Runtime Logs en DigitalOcean (ahora muestran errores PHP)
+3. Verifica que todas las variables de entorno estén configuradas
+4. Consulta [OPTIMIZACION_512MB.md](OPTIMIZACION_512MB.md) para más detalles
+
+El repositorio ya está optimizado, pero si tienes muchos plugins o tráfico alto, considera:
+- Upgrade a plan con 1GB RAM ($12/mes)
+- Usar plugin de caché (WP Super Cache)
+- Optimizar imágenes antes de subir
