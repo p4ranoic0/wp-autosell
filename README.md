@@ -18,6 +18,19 @@ Este repositorio está configurado para ser desplegado en DigitalOcean App Platf
 - Credenciales del MySQL: host, puerto, nombre de base de datos, usuario y contraseña
 - Cuenta en DigitalOcean con App Platform habilitado
 
+### Requisitos de PHP
+
+Este proyecto requiere **PHP 8.1+** con las siguientes extensiones (configuradas automáticamente):
+- ✅ `mbstring` - Requerido para funciones de cadenas multibyte en WordPress
+- ✅ `mysqli` - Conexión a MySQL
+- ✅ `curl` - Comunicaciones HTTP
+- ✅ `gd` - Procesamiento de imágenes
+- ✅ `xml` - Procesamiento XML
+- ✅ `zip` - Compresión de archivos
+- ✅ `openssl` - Conexiones seguras
+
+**Nota**: Las extensiones se configuran automáticamente mediante `composer.json`, `.user.ini` y `.do/app.yaml`. No requiere configuración manual.
+
 ### Configuración
 
 #### 1. Variables de entorno requeridas

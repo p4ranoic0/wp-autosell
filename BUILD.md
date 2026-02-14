@@ -27,20 +27,44 @@ When deployed to DigitalOcean App Platform:
    - Build command: `bash build.sh`
    - Environment variables needed
    - PHP environment configuration
+   - PHP version and required extensions
 
-2. **Build script (`build.sh`) runs** and:
+2. **PHP extensions are configured** via multiple files for compatibility:
+   - `composer.json` - Declares required PHP extensions for buildpack
+   - `.user.ini` - PHP configuration loaded at runtime
+   - `php.ini` - Additional PHP settings
+   - `.do/app.yaml` - Environment variables for PHP_VERSION and PHP_EXTENSIONS
+
+3. **Build script (`build.sh`) runs** and:
+   - Verifies PHP version and installed extensions
    - Downloads latest WordPress from wordpress.org
    - Extracts WordPress to a temporary location
    - Copies `wp-includes/`, `wp-admin/`, and `wp-content/` to the app directory
    - Keeps the custom `wp-config.php` from the repository
    - Cleans up temporary files
 
-3. **Application starts** with:
+4. **Application starts** with:
    - WordPress core directories in place
    - Custom configuration from repository
    - Environment variables from App Platform
+   - All required PHP extensions loaded
 
-### 3. Environment Variables
+### 3. PHP Requirements
+
+**Required PHP Version**: 8.1+
+
+**Required PHP Extensions**:
+- `mbstring` - Multi-byte string functions (required by WordPress core)
+- `mysqli` - MySQL database connectivity
+- `curl` - HTTP requests
+- `gd` - Image processing
+- `xml` - XML parsing
+- `zip` - Archive handling
+- `openssl` - Secure connections
+
+These extensions are automatically configured via `composer.json` and loaded by the PHP buildpack.
+
+### 4. Environment Variables
 
 The following environment variables MUST be configured in DigitalOcean App Platform:
 

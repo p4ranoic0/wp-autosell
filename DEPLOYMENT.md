@@ -201,5 +201,35 @@ Si algo falla:
 - WordPress requiere PHP 7.4+
 - Debería funcionar sin cambios
 
+### Error: Call to undefined function wp_is_valid_utf8()
+
+**Causa**: PHP mbstring extension no está instalado/habilitado.
+
+**Solución**: Este error está automáticamente prevenido mediante las siguientes configuraciones en el repositorio:
+
+1. ✅ `composer.json` - Especifica extensiones PHP requeridas
+2. ✅ `.user.ini` - Carga extensiones PHP al inicio
+3. ✅ `php.ini` - Configuración alternativa de extensiones
+4. ✅ `.do/app.yaml` - Variables de entorno PHP_VERSION y PHP_EXTENSIONS
+
+**Si aún ves este error después de desplegar**:
+
+1. Verifica los **Build Logs** en App Platform:
+   - Busca mensajes sobre instalación de extensiones PHP
+   - Verifica que `composer.json` fue procesado correctamente
+   
+2. Verifica los **Runtime Logs**:
+   - Busca mensajes sobre carga de extensiones
+   - Ejecuta `php -m` para listar extensiones cargadas (si tienes acceso)
+
+3. Fuerza un rebuild:
+   - En App Platform: Actions → Force Rebuild and Deploy
+   
+4. Si el problema persiste:
+   - Contacta soporte de DigitalOcean
+   - Proporciona los build logs y runtime logs
+
+**Nota**: Las extensiones PHP requeridas por WordPress (`mbstring`, `mysqli`, `curl`, `gd`, `xml`, `zip`, `openssl`) están configuradas en múltiples archivos para máxima compatibilidad con el buildpack de DigitalOcean.
+
 ## ¿Necesitas ayuda?
 Revisa los logs en App Platform o contacta al equipo de desarrollo.

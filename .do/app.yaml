@@ -12,8 +12,19 @@ services:
     http_port: 8080
     routes:
       - path: /
+    
+    # PHP Configuration - Required extensions for WordPress
     envs:
-      # Database Configuration - REQUIRED: Must be set in App Platform UI
+      # PHP Version and Extensions
+      - key: PHP_VERSION
+        value: "8.1"
+        scope: BUILD_AND_RUN_TIME
+      
+      - key: PHP_EXTENSIONS
+        value: "mbstring mysqli curl gd xml zip openssl"
+        scope: BUILD_AND_RUN_TIME
+      
+      # Database Configuration (REQUIRED: Must be set in App Platform UI)
       - key: DB_NAME
         scope: RUN_TIME
       - key: DB_USER
