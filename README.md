@@ -28,7 +28,7 @@ Configura las siguientes variables de entorno en DigitalOcean App Platform (Sett
 - `DB_NAME` - Nombre de la base de datos
 - `DB_USER` - Usuario de la base de datos
 - `DB_PASSWORD` - Contraseña (marcar como "Encrypt")
-- `DB_HOST` - Host del MySQL **including port** (ejemplo: `db-mysql-nyc3-xxxxx.db.ondigitalocean.com:25060`)
+- `DB_HOST` - Host del MySQL **incluyendo puerto** (ejemplo: `db-mysql-nyc3-xxxxx.db.ondigitalocean.com:25060`)
 - `DB_PREFIX` - Prefijo de tablas (opcional, default: `wp_`)
 - `DB_SSL` - Set to `REQUIRED` or `true` for DigitalOcean Managed MySQL
 
