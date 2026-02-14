@@ -64,9 +64,18 @@ Generate security keys at: https://api.wordpress.org/secret-key/1.1/salt/
 ### Build Fails
 
 If the build script fails:
-1. Check the Build Logs in DigitalOcean App Platform
+1. **Check the Build Logs in DigitalOcean App Platform**
+   - Go to your app → **Activity** → Click on the latest deployment → **Build Logs**
+   - Look for detailed error messages from the build script
 2. Verify internet connectivity is available during build
 3. Check if wordpress.org is accessible
+
+**New in v2.0**: The build script now provides comprehensive logging:
+- ✓ Download progress and method used (curl/wget)
+- ✓ File size verification
+- ✓ Extraction verification
+- ✓ Post-installation verification with WordPress version
+- ✗ Clear error messages when something fails
 
 ### Missing Directories Error
 
@@ -74,14 +83,20 @@ If you see: `Failed to open stream: No such file or directory in /workspace/wp-i
 
 **Causes**:
 - Build script didn't run or failed
-- Environment variables not configured
+- Environment variables not configured (especially DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_SSL)
 - Deploy failed
 
 **Solutions**:
-1. Check Build Logs for errors
+1. **Check Build Logs** - The enhanced build script now shows exactly where it fails:
+   - Download failure? Check internet connectivity
+   - Extraction failure? Check if download was complete
+   - Verification failure? See which files are missing
 2. Verify `.do/app.yaml` exists and specifies `build_command: bash build.sh`
 3. Verify `build.sh` is executable (`chmod +x build.sh`)
-4. Force rebuild: Actions → Force Rebuild and Deploy
+4. **Verify all environment variables are set** in App Platform (Settings → Environment Variables)
+5. Force rebuild: Actions → **Force Rebuild and Deploy**
+
+**Important**: The DB_SSL variable is now required for DigitalOcean Managed MySQL. Set it to `REQUIRED` in your environment variables.
 
 ## Local Development
 
