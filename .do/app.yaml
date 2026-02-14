@@ -24,12 +24,12 @@ services:
     instance_count: 1
     instance_size_slug: basic-xxs
     
-    # Health check - More tolerant for installation phase
+    # Health check - Uses ping.php which does NOT require database
     health_check:
-      http_path: /
-      initial_delay_seconds: 60
+      http_path: /ping.php
+      initial_delay_seconds: 30
       period_seconds: 15
-      timeout_seconds: 10
+      timeout_seconds: 5
       success_threshold: 1
       failure_threshold: 5
     

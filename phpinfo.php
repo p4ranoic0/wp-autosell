@@ -70,22 +70,59 @@
         $db_user = getenv('DB_USER') ?: 'root';
         $db_password = getenv('DB_PASSWORD') ?: '';
         
-        echo "<p><strong>DB_HOST:</strong> " . ($db_host ?: '<span class="error">NOT SET</span>') . "</p>";
-        echo "<p><strong>DB_NAME:</strong> " . ($db_name ?: '<span class="error">NOT SET</span>') . "</p>";
-        echo "<p><strong>DB_USER:</strong> " . ($db_user ?: '<span class="error">NOT SET</span>') . "</p>";
-        echo "<p><strong>DB_PASSWORD:</strong> " . (empty($db_password) ? '<span class="error">NOT SET</span>' : '<span class="success">SET</span>') . "</p>";
+        $has_db_host = (getenv('DB_HOST') !== false && getenv('DB_HOST') !== '');
+        $has_db_name = (getenv('DB_NAME') !== false && getenv('DB_NAME') !== '');
+        $has_db_user = (getenv('DB_USER') !== false && getenv('DB_USER') !== '');
+        $has_db_pass = (getenv('DB_PASSWORD') !== false && getenv('DB_PASSWORD') !== '');
+
+        echo "<p><strong>DB_HOST env var:</strong> " . ($has_db_host ? '<span class="success">SET</span> (' . htmlspecialchars($db_host) . ')' : '<span class="error">NOT SET</span> (defaulting to 127.0.0.1)') . "</p>";
+        echo "<p><strong>DB_NAME env var:</strong> " . ($has_db_name ? '<span class="success">SET</span>' : '<span class="error">NOT SET</span> (defaulting to wordpress)') . "</p>";
+        echo "<p><strong>DB_USER env var:</strong> " . ($has_db_user ? '<span class="success">SET</span>' : '<span class="error">NOT SET</span> (defaulting to root)') . "</p>";
+        echo "<p><strong>DB_PASSWORD env var:</strong> " . ($has_db_pass ? '<span class="success">SET</span>' : '<span class="error">NOT SET</span>') . "</p>";
         
-        try {
-            $mysqli = new mysqli($db_host, $db_user, $db_password, $db_name);
-            if ($mysqli->connect_error) {
-                echo '<p class="error">✗ Database Connection Failed: ' . htmlspecialchars($mysqli->connect_error) . '</p>';
+        if (!$has_db_host || !$has_db_name || !$has_db_user) {
+            echo '<p class="error">✗ Database env variables NOT configured. Set DB_HOST, DB_USER, DB_PASSWORD, DB_NAME in DigitalOcean App Platform Settings > Environment Variables</p>';
+        } else {
+            // First check if host is reachable with a short timeout
+            $host_parts = explode(':', $db_host);
+            $connect_host = $host_parts[0];
+            $connect_port = isset($host_parts[1]) ? (int)$host_parts[1] : 3306;
+            
+            echo "<p>Testing TCP connection to $connect_host:$connect_port (3s timeout)...</p>";
+            $socket = @fsockopen($connect_host, $connect_port, $errno, $errstr, 3);
+            
+            if ($socket === false) {
+                echo '<p class="error">✗ Cannot reach database host: ' . htmlspecialchars($errstr) . ' (errno: ' . $errno . ')</p>';
+                echo '<p class="warning">⚠ Check: 1) DB_HOST value is correct, 2) Database is running, 3) App is in DB trusted sources</p>';
             } else {
-                echo '<p class="success">✓ Database Connection Successful</p>';
-                echo '<p>MySQL Version: ' . $mysqli->server_info . '</p>';
-                $mysqli->close();
+                fclose($socket);
+                echo '<p class="success">✓ Host is reachable. Testing MySQL authentication...</p>';
+                
+                try {
+                    $mysqli = mysqli_init();
+                    $mysqli->options(MYSQLI_OPT_CONNECT_TIMEOUT, 5);
+                    
+                    // Check if SSL is required (DigitalOcean Managed MySQL)
+                    $db_ssl_env = getenv('DB_SSL');
+                    $use_ssl = $db_ssl_env && in_array(strtolower(trim($db_ssl_env)), ['true', 'required'], true);
+                    $flags = $use_ssl ? MYSQLI_CLIENT_SSL : 0;
+                    
+                    if ($use_ssl) {
+                        $mysqli->ssl_set(NULL, NULL, NULL, NULL, NULL);
+                        echo '<p class="success">Using SSL connection (DB_SSL=' . htmlspecialchars($db_ssl_env) . ')</p>';
+                    }
+                    @$mysqli->real_connect($connect_host, $db_user, $db_password, $db_name, $connect_port, NULL, $flags);
+                    if ($mysqli->connect_error) {
+                        echo '<p class="error">✗ Database Connection Failed: ' . htmlspecialchars($mysqli->connect_error) . '</p>';
+                    } else {
+                        echo '<p class="success">✓ Database Connection Successful</p>';
+                        echo '<p>MySQL Version: ' . $mysqli->server_info . '</p>';
+                        $mysqli->close();
+                    }
+                } catch (Exception $e) {
+                    echo '<p class="error">✗ Database Connection Error: ' . htmlspecialchars($e->getMessage()) . '</p>';
+                }
             }
-        } catch (Exception $e) {
-            echo '<p class="error">✗ Database Connection Error: ' . htmlspecialchars($e->getMessage()) . '</p>';
         }
         ?>
     </div>
