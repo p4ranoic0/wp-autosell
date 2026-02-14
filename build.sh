@@ -1,16 +1,23 @@
 #!/bin/bash
-set -e
+set -e  # Exit on error
+set -u  # Exit on undefined variable
+set -o pipefail  # Exit on pipe failure
 
 echo "==================================="
 echo "WordPress Installation Build Script"
+echo "==================================="
+echo "Build started at: $(date)"
+echo "Working directory: $(pwd)"
 echo "==================================="
 
 # Check PHP version and extensions
 echo "→ Checking PHP version..."
 php -v
+echo ""
 
 echo "→ Checking loaded PHP extensions..."
 php -m
+echo ""
 
 echo "→ Checking for mbstring specifically..."
 if php -m | grep -qw "mbstring"; then
