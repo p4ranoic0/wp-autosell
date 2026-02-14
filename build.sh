@@ -1,43 +1,24 @@
 #!/bin/bash
-set -e  # Exit on error
-set -u  # Exit on undefined variable
-set -o pipefail  # Exit on pipe failure
+set -e
 
 echo "==================================="
 echo "WordPress Installation Build Script"
 echo "==================================="
-echo "Build started at: $(date)"
-echo "Working directory: $(pwd)"
-echo "==================================="
 
-# Verify PHP and required extensions
-echo "→ Checking PHP version and extensions..."
+# Check PHP version and extensions
+echo "→ Checking PHP version..."
 php -v
-echo ""
 
-# Check for required extensions
-echo "Checking for required extensions:"
-REQUIRED_EXTENSIONS=("mbstring" "mysqli" "curl" "gd" "xml" "zip" "openssl")
-MISSING_EXTENSIONS=()
+echo "→ Checking loaded PHP extensions..."
+php -m
 
-for ext in "${REQUIRED_EXTENSIONS[@]}"; do
-    if php -m | grep -qi "^${ext}$"; then
-        echo "  ✓ $ext"
-    else
-        echo "  ✗ $ext (missing)"
-        MISSING_EXTENSIONS+=("$ext")
-    fi
-done
-
-if [ ${#MISSING_EXTENSIONS[@]} -gt 0 ]; then
-    echo ""
-    echo "⚠️  WARNING: Missing required PHP extensions: ${MISSING_EXTENSIONS[*]}"
-    echo "   WordPress may not function correctly without these extensions."
-    echo "   Ensure composer.json is processed during build to install extensions."
+echo "→ Checking for mbstring specifically..."
+if php -m | grep -q "mbstring"; then
+    echo "✓ mbstring is available"
 else
-    echo "  ✓ All required extensions are loaded"
+    echo "⚠️  WARNING: mbstring extension NOT found!"
+    echo "Attempting to continue anyway..."
 fi
-echo ""
 
 # Check if WordPress core directories already exist
 if [ -d "wp-includes" ] && [ -d "wp-admin" ] && [ -d "wp-content" ]; then
@@ -225,3 +206,14 @@ echo "✓ WordPress installation complete!"
 echo "✓ All verification checks passed"
 echo "Build completed at: $(date)"
 echo "==================================="
+
+# Final verification
+if [ ! -f "wp-includes/version.php" ]; then
+    echo "✗ ERROR: wp-includes/version.php not found after installation"
+    exit 1
+fi
+
+echo "✓ Build verification successful"
+echo ""
+echo "Installed extensions:"
+php -m

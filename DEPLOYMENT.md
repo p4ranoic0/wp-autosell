@@ -207,29 +207,49 @@ Si algo falla:
 
 **Solución**: Este error está automáticamente prevenido mediante las siguientes configuraciones en el repositorio:
 
-1. ✅ `composer.json` - Especifica extensiones PHP requeridas
+1. ✅ `composer.json` - Especifica extensiones PHP requeridas (incluyendo ext-json)
 2. ✅ `.user.ini` - Carga extensiones PHP al inicio
 3. ✅ `php.ini` - Configuración alternativa de extensiones
-4. ✅ `.do/app.yaml` - Variables de entorno PHP_VERSION y PHP_EXTENSIONS
+4. ✅ `.do/app.yaml` - Configuración optimizada de DigitalOcean App Platform
+5. ✅ `.htaccess` - Configuración de mbstring para Apache/mod_php
+6. ✅ `build.sh` - Verifica extensiones durante el build
+
+**Comandos de verificación de extensiones PHP**:
+
+```bash
+# Listar todas las extensiones cargadas
+php -m
+
+# Verificar mbstring específicamente
+php -m | grep mbstring
+
+# Ver información detallada de mbstring
+php --ri mbstring
+
+# Ver toda la configuración PHP
+php -i | grep mbstring
+```
 
 **Si aún ves este error después de desplegar**:
 
 1. Verifica los **Build Logs** en App Platform:
    - Busca mensajes sobre instalación de extensiones PHP
    - Verifica que `composer.json` fue procesado correctamente
+   - Busca "✓ mbstring is available" en los logs del build
    
 2. Verifica los **Runtime Logs**:
    - Busca mensajes sobre carga de extensiones
-   - Ejecuta `php -m` para listar extensiones cargadas (si tienes acceso)
-
+   - Verifica si hay errores relacionados con PHP
+ 
 3. Fuerza un rebuild:
    - En App Platform: Actions → Force Rebuild and Deploy
    
 4. Si el problema persiste:
    - Contacta soporte de DigitalOcean
    - Proporciona los build logs y runtime logs
+   - Menciona que composer.json especifica ext-mbstring como requerimiento
 
-**Nota**: Las extensiones PHP requeridas por WordPress (`mbstring`, `mysqli`, `curl`, `gd`, `xml`, `zip`, `openssl`) están configuradas en múltiples archivos para máxima compatibilidad con el buildpack de DigitalOcean.
+**Nota**: Las extensiones PHP requeridas por WordPress (`mbstring`, `mysqli`, `curl`, `gd`, `xml`, `zip`, `openssl`, `json`) están configuradas en múltiples archivos para máxima compatibilidad con el buildpack de DigitalOcean.
 
 ## ¿Necesitas ayuda?
 Revisa los logs en App Platform o contacta al equipo de desarrollo.
