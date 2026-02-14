@@ -86,8 +86,15 @@ Copia y pega los valores generados para:
 
 El repositorio incluye el archivo `.do/app.yaml` que configura automáticamente:
 - ✅ El comando de build: `bash build.sh` (descarga e instala WordPress)
-- ✅ Las variables de entorno necesarias
+- ✅ Las variables de entorno necesarias (incluyendo DB_SSL)
 - ✅ La configuración de PHP y puerto HTTP
+
+**Mejoras recientes en el script de build**:
+- ✅ Logging detallado de cada paso del proceso
+- ✅ Verificación automática de la descarga y extracción
+- ✅ Detección de la versión de WordPress instalada
+- ✅ Mensajes de error claros cuando algo falla
+- ✅ Validación post-instalación de archivos críticos
 
 **No necesitas hacer nada aquí** - DigitalOcean lo detecta automáticamente. Si tienes problemas, verifica que el archivo `.do/app.yaml` existe en el repositorio.
 
@@ -152,27 +159,36 @@ FLUSH PRIVILEGES;
 
 ### Debugging
 Si algo falla:
-1. Revisa los **Runtime Logs** en App Platform
-2. Habilita temporalmente `WP_DEBUG=true`
-3. Verifica que las variables de entorno están configuradas
+1. **Revisa los Build Logs primero** en App Platform (Activity → Build Logs)
+   - El script mejorado ahora muestra exactamente dónde falla
+   - Busca mensajes con ✗ (error) o ⚠ (advertencia)
+2. Revisa los **Runtime Logs** en App Platform si la app inicia pero no funciona
+3. Habilita temporalmente `WP_DEBUG=true` para ver errores de WordPress
+4. Verifica que **todas** las variables de entorno están configuradas (incluyendo DB_SSL)
 
 ## Troubleshooting Común
 
 ### "Failed to open stream: No such file or directory in wp-settings.php" o "Failed opening required '/workspace/wp-includes/version.php'"
 
 **Causa**: Este error ocurre cuando:
-1. Las variables de entorno **NO** están configuradas (paso 3)
+1. Las variables de entorno **NO** están configuradas (paso 3) - especialmente DB_SSL
 2. El script de construcción (`build.sh`) no pudo descargar WordPress
 3. Problema durante el deploy en DigitalOcean
 
 **Solución**:
 1. **Verifica que TODAS las variables de entorno obligatorias estén configuradas** en App Platform (Settings → Environment Variables)
-2. Revisa los **Build Logs** en App Platform para ver si el script de construcción se ejecutó correctamente
-3. Si el error persiste, verifica que el repositorio tenga el archivo `build.sh` y esté configurado como ejecutable
+   - Especialmente importante: `DB_SSL` (debe ser `REQUIRED` para DigitalOcean Managed MySQL)
+2. **Revisa los Build Logs** en App Platform (Activity → Latest Deployment → Build Logs)
+   - El script mejorado te dirá exactamente qué falló:
+     - "Failed to download WordPress" → Problema de conectividad
+     - "File is too small" → Descarga incompleta o corrupta
+     - "Failed to extract" → Archivo corrupto
+     - "VERIFICATION FAILED" → Indica qué archivos faltan
+3. Si el script muestra que la descarga fue exitosa pero faltan archivos, revisa permisos
 4. Intenta hacer un **nuevo deploy** desde App Platform (Actions → Force Rebuild and Deploy)
 
 ### "Error estableciendo conexión con la base de datos"
-- Verifica `DB_HOST`, `DB_USER`, `DB_PASSWORD` y `DB_NAME`
+- Verifica `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` **y `DB_SSL`**
 - Asegúrate de que MySQL acepta conexiones remotas
 - Verifica el puerto en `DB_HOST` (ejemplo: `:25060`)
 
