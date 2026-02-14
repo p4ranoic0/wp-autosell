@@ -123,18 +123,48 @@ fi
 
 echo "✓ Extraction verified successfully"
 
-echo "→ Installing WordPress core directories..."
-# Copy only the missing directories (wp-includes, wp-admin, wp-content)
-# We keep the existing root files (wp-config.php, etc.) from the repository
-if [ ! -d "wp-includes" ]; then
-    cp -r /tmp/wordpress/wp-includes ./
-    echo "✓ Copied wp-includes/"
-fi
+echo "→ Installing WordPress core files and directories..."
 
-if [ ! -d "wp-admin" ]; then
-    cp -r /tmp/wordpress/wp-admin ./
-    echo "✓ Copied wp-admin/"
-fi
+# CRITICAL: Always update root-level WordPress core PHP files to match
+# the downloaded version. This prevents version mismatch errors like
+# "Call to undefined function wp_is_valid_utf8()" which happen when
+# wp-settings.php is from an older version than wp-includes/.
+echo "→ Updating WordPress core root files..."
+WP_CORE_ROOT_FILES=(
+    "wp-settings.php"
+    "wp-load.php"
+    "wp-blog-header.php"
+    "wp-login.php"
+    "wp-activate.php"
+    "wp-comments-post.php"
+    "wp-cron.php"
+    "wp-links-opml.php"
+    "wp-mail.php"
+    "wp-signup.php"
+    "wp-trackback.php"
+    "xmlrpc.php"
+    "index.php"
+    "wp-config-sample.php"
+)
+
+for core_file in "${WP_CORE_ROOT_FILES[@]}"; do
+    if [ -f "/tmp/wordpress/$core_file" ]; then
+        cp -f "/tmp/wordpress/$core_file" "./$core_file"
+        echo "  ✓ Updated $core_file"
+    fi
+done
+echo "✓ Core root files updated to match downloaded WordPress version"
+
+# Copy core directories (always fresh to avoid partial updates)
+echo "→ Installing WordPress core directories..."
+# Remove old directories to ensure clean copy
+rm -rf wp-includes wp-admin
+
+cp -r /tmp/wordpress/wp-includes ./
+echo "✓ Copied wp-includes/"
+
+cp -r /tmp/wordpress/wp-admin ./
+echo "✓ Copied wp-admin/"
 
 # Handle wp-content specially - merge with any existing custom content
 if [ ! -d "wp-content" ]; then
