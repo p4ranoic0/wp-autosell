@@ -23,7 +23,7 @@ services:
         type: SECRET
       - key: DB_HOST
         scope: RUN_TIME
-      # Database SSL/TLS - Set to REQUIRED for DigitalOcean Managed MySQL
+      # Database SSL/TLS connection (Set to 'REQUIRED' for DigitalOcean Managed MySQL)
       - key: DB_SSL
         scope: RUN_TIME
       # Optional: Database table prefix (defaults to wp_ if not set)

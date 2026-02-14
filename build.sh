@@ -71,11 +71,15 @@ if [ ! -f /tmp/wordpress.tar.gz ]; then
     exit 1
 fi
 
-FILE_SIZE=$(stat -f%z /tmp/wordpress.tar.gz 2>/dev/null || stat -c%s /tmp/wordpress.tar.gz 2>/dev/null || echo "0")
+# Check file size (WordPress is typically 15-25 MB compressed)
+# Minimum size of 1 MB helps detect failed/incomplete downloads
+MIN_EXPECTED_SIZE=1000000
+FILE_SIZE=$(wc -c < /tmp/wordpress.tar.gz 2>/dev/null || echo "0")
 echo "  Downloaded file size: $FILE_SIZE bytes"
 
-if [ "$FILE_SIZE" -lt 1000000 ]; then
+if [ "$FILE_SIZE" -lt "$MIN_EXPECTED_SIZE" ]; then
     echo "✗ ERROR: Downloaded file is too small ($FILE_SIZE bytes), likely corrupt"
+    echo "  Expected at least $MIN_EXPECTED_SIZE bytes"
     exit 1
 fi
 
