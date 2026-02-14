@@ -24,7 +24,6 @@ services:
         value: "mbstring mysqli curl gd xml zip openssl"
         scope: BUILD_AND_RUN_TIME
       
-      # Database Configuration
       # Database Configuration (REQUIRED: Must be set in App Platform UI)
       - key: DB_NAME
         scope: RUN_TIME

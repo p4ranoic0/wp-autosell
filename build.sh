@@ -14,8 +14,29 @@ echo "==================================="
 echo "→ Checking PHP version and extensions..."
 php -v
 echo ""
+
+# Check for required extensions
 echo "Checking for required extensions:"
-php -m | grep -E "(mbstring|mysqli|curl|gd|xml|zip|openssl)" || echo "⚠️  Warning: Some required extensions may be missing"
+REQUIRED_EXTENSIONS=("mbstring" "mysqli" "curl" "gd" "xml" "zip" "openssl")
+MISSING_EXTENSIONS=()
+
+for ext in "${REQUIRED_EXTENSIONS[@]}"; do
+    if php -m | grep -qi "^${ext}$"; then
+        echo "  ✓ $ext"
+    else
+        echo "  ✗ $ext (missing)"
+        MISSING_EXTENSIONS+=("$ext")
+    fi
+done
+
+if [ ${#MISSING_EXTENSIONS[@]} -gt 0 ]; then
+    echo ""
+    echo "⚠️  WARNING: Missing required PHP extensions: ${MISSING_EXTENSIONS[*]}"
+    echo "   WordPress may not function correctly without these extensions."
+    echo "   Ensure composer.json is processed during build to install extensions."
+else
+    echo "  ✓ All required extensions are loaded"
+fi
 echo ""
 
 # Check if WordPress core directories already exist
