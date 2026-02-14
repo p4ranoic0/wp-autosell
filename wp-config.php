@@ -36,7 +36,9 @@ define( 'DB_COLLATE', '' );
 /** MySQL SSL/TLS Configuration for DigitalOcean Managed Database */
 $db_ssl = getenv('DB_SSL');
 if ( $db_ssl && in_array( strtolower( trim( $db_ssl ) ), array( 'true', 'required' ), true ) ) {
-	define( 'MYSQL_CLIENT_FLAGS', MYSQLI_CLIENT_SSL );
+	if ( defined( 'MYSQLI_CLIENT_SSL' ) ) {
+		define( 'MYSQL_CLIENT_FLAGS', MYSQLI_CLIENT_SSL );
+	}
 }
 
 /**#@+
