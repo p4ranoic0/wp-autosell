@@ -59,9 +59,21 @@ if [ ! -d "wp-admin" ]; then
     echo "✓ Copied wp-admin/"
 fi
 
+# Handle wp-content specially - merge with any existing custom content
 if [ ! -d "wp-content" ]; then
     cp -r /tmp/wordpress/wp-content ./
     echo "✓ Copied wp-content/"
+else
+    echo "→ wp-content/ exists, merging with WordPress defaults..."
+    # Copy WordPress default directories if they don't exist
+    [ ! -d "wp-content/themes" ] && cp -r /tmp/wordpress/wp-content/themes ./wp-content/
+    [ ! -d "wp-content/plugins" ] && cp -r /tmp/wordpress/wp-content/plugins ./wp-content/
+    [ ! -d "wp-content/languages" ] && mkdir -p ./wp-content/languages
+    [ ! -d "wp-content/upgrade" ] && mkdir -p ./wp-content/upgrade
+    [ ! -d "wp-content/uploads" ] && mkdir -p ./wp-content/uploads
+    # Copy index.php if it doesn't exist
+    [ ! -f "wp-content/index.php" ] && cp /tmp/wordpress/wp-content/index.php ./wp-content/
+    echo "✓ Merged wp-content/"
 fi
 
 echo "→ Cleaning up..."

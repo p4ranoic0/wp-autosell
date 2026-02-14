@@ -98,6 +98,40 @@ cp .env.example .env
 php -S localhost:8000
 ```
 
+## Adding Custom Themes and Plugins
+
+The build script intelligently merges custom content with WordPress defaults:
+
+### Adding a Custom Theme
+
+1. Create your theme directory in `wp-content/themes/your-theme/`
+2. Commit it to the repository
+3. On deployment:
+   - Build script downloads WordPress
+   - Copies default themes to `wp-content/themes/`
+   - Your custom theme remains intact and is preserved
+
+### Adding a Custom Plugin
+
+1. Add your plugin to `wp-content/plugins/your-plugin/`
+2. Commit it to the repository
+3. On deployment:
+   - Build script downloads WordPress
+   - Copies default plugins to `wp-content/plugins/`
+   - Your custom plugin is preserved
+
+### What Gets Ignored
+
+The `.gitignore` is configured to ignore:
+- WordPress core directories (`wp-includes/`, `wp-admin/`)
+- Default WordPress themes (twenty* themes)
+- Default plugins (Akismet, Hello Dolly)
+- User uploads and dynamic content
+
+But allows:
+- Custom themes (anything not matching `twenty*`)
+- Custom plugins (anything not default)
+
 ## Why This Approach?
 
 **Benefits**:

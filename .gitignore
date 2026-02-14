@@ -2,9 +2,20 @@
 wp-config-local.php
 .htaccess
 
+# WordPress core directories (automatically installed by build.sh during deployment)
+wp-includes/
+wp-admin/
+
+# WordPress content - ignore WordPress defaults but allow custom themes/plugins
+wp-content/index.php
+wp-content/themes/twenty*/
+wp-content/plugins/akismet/
+wp-content/plugins/hello.php
+wp-content/languages/
+wp-content/upgrade/
+wp-content/uploads/
+
 # WordPress cache
-/wp-content/cache/
-/wp-content/uploads/wflogs/
 
 # WordPress plugins
 # Note: Only ignore specific plugins if you don't want them version controlled
