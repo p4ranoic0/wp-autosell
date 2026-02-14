@@ -13,7 +13,7 @@ echo "→ Checking loaded PHP extensions..."
 php -m
 
 echo "→ Checking for mbstring specifically..."
-if php -m | grep -q "mbstring"; then
+if php -m | grep -qw "mbstring"; then
     echo "✓ mbstring is available"
 else
     echo "⚠️  WARNING: mbstring extension NOT found!"

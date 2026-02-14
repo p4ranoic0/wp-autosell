@@ -1,4 +1,6 @@
 name: wp-autosell
+# Region can be changed based on your geographic location
+# Options: nyc (New York), sfo (San Francisco), ams (Amsterdam), sgp (Singapore), fra (Frankfurt), blr (Bangalore)
 region: nyc
 
 services:
