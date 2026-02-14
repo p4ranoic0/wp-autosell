@@ -10,6 +10,14 @@ echo "Build started at: $(date)"
 echo "Working directory: $(pwd)"
 echo "==================================="
 
+# Verify PHP and required extensions
+echo "→ Checking PHP version and extensions..."
+php -v
+echo ""
+echo "Checking for required extensions:"
+php -m | grep -E "(mbstring|mysqli|curl|gd|xml|zip|openssl)" || echo "⚠️  Warning: Some required extensions may be missing"
+echo ""
+
 # Check if WordPress core directories already exist
 if [ -d "wp-includes" ] && [ -d "wp-admin" ] && [ -d "wp-content" ]; then
     echo "✓ WordPress core directories already exist. Skipping download."

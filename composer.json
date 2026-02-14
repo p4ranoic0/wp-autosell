@@ -1,0 +1,23 @@
+{
+  "name": "p4ranoic0/wp-autosell",
+  "description": "WordPress landing page for Autosell on DigitalOcean App Platform",
+  "type": "project",
+  "license": "GPL-2.0-or-later",
+  "require": {
+    "php": "^8.1",
+    "ext-mbstring": "*",
+    "ext-mysqli": "*",
+    "ext-curl": "*",
+    "ext-gd": "*",
+    "ext-xml": "*",
+    "ext-zip": "*",
+    "ext-openssl": "*"
+  },
+  "config": {
+    "platform": {
+      "php": "8.1"
+    },
+    "optimize-autoloader": true,
+    "classmap-authoritative": false
+  }
+}
