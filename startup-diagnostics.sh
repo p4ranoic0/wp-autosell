@@ -122,15 +122,36 @@ if [ -n "$DB_HOST" ] && [ -n "$DB_USER" ] && [ -n "$DB_NAME" ]; then
     echo "Database: $DB_NAME"
     echo "User: $DB_USER"
     
-    # Try to connect using PHP
-    CONNECTION_TEST=$(php -r "
+    # Try to connect using PHP with a timeout
+    CONNECTION_TEST=$(timeout 10 php -r "
         \$host = getenv('DB_HOST');
         \$user = getenv('DB_USER');
         \$pass = getenv('DB_PASSWORD');
         \$db = getenv('DB_NAME');
         
+        // Parse host:port
+        \$parts = explode(':', \$host);
+        \$connect_host = \$parts[0];
+        \$connect_port = isset(\$parts[1]) ? (int)\$parts[1] : 3306;
+        
+        // First test TCP reachability with 3s timeout
+        \$socket = @fsockopen(\$connect_host, \$connect_port, \$errno, \$errstr, 3);
+        if (\$socket === false) {
+            echo 'ERROR: Cannot reach DB host ' . \$connect_host . ':' . \$connect_port . ' - ' . \$errstr . ' (errno: ' . \$errno . ')';
+            exit(1);
+        }
+        fclose(\$socket);
+        
         try {
-            \$mysqli = new mysqli(\$host, \$user, \$pass, \$db);
+            \$mysqli = mysqli_init();
+            \$mysqli->options(MYSQLI_OPT_CONNECT_TIMEOUT, 5);
+            
+            // Check if SSL is required (DigitalOcean Managed MySQL)
+            \$db_ssl = getenv('DB_SSL');
+            \$use_ssl = \$db_ssl && in_array(strtolower(trim(\$db_ssl)), ['true', 'required'], true);
+            \$flags = \$use_ssl ? MYSQLI_CLIENT_SSL : 0;
+            if (\$use_ssl) { \$mysqli->ssl_set(NULL,NULL,NULL,NULL,NULL); }
+            @\$mysqli->real_connect(\$connect_host, \$user, \$pass, \$db, \$connect_port, NULL, \$flags);
             if (\$mysqli->connect_error) {
                 echo 'ERROR: ' . \$mysqli->connect_error;
                 exit(1);

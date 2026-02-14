@@ -168,73 +168,108 @@ $db_password = getenv('DB_PASSWORD');
 $db_name = getenv('DB_NAME');
 
 if ($db_host && $db_user && $db_name) {
-    try {
-        $mysqli = @new mysqli($db_host, $db_user, $db_password, $db_name);
+    // First test if the host is reachable with a short timeout (3 seconds)
+    $host_parts = explode(':', $db_host);
+    $connect_host = $host_parts[0];
+    $connect_port = isset($host_parts[1]) ? (int)$host_parts[1] : 3306;
+    
+    $socket_test = @fsockopen($connect_host, $connect_port, $errno, $errstr, 3);
+    
+    if ($socket_test === false) {
+        add_check('database_connection', 'error', "Cannot reach database host (timeout 3s): $errstr (errno: $errno)", [
+            'host' => $db_host,
+            'connect_host' => $connect_host,
+            'connect_port' => $connect_port,
+            'database' => $db_name,
+            'user' => $db_user,
+            'socket_error' => $errstr,
+            'socket_errno' => $errno,
+            'hint' => 'Check that DB_HOST is correct, the database is running, and the app is in the trusted sources list'
+        ]);
+    } else {
+        fclose($socket_test);
         
-        if ($mysqli->connect_error) {
-            add_check('database_connection', 'error', 'Failed to connect: ' . $mysqli->connect_error, [
-                'host' => $db_host,
-                'database' => $db_name,
-                'user' => $db_user,
-                'error_code' => $mysqli->connect_errno,
-                'error_message' => $mysqli->connect_error
-            ]);
-        } else {
-            add_check('database_connection', 'ok', 'Successfully connected to database', [
-                'host' => $db_host,
-                'database' => $db_name,
-                'user' => $db_user,
-                'mysql_version' => $mysqli->server_info
-            ]);
+        try {
+            // Host is reachable, now try actual MySQL connection with timeout
+            $mysqli = @mysqli_init();
+            $mysqli->options(MYSQLI_OPT_CONNECT_TIMEOUT, 5);
             
-            // Check if WordPress tables exist
-            $result = $mysqli->query("SHOW TABLES");
-            $table_count = 0;
-            $wp_tables = [];
+            // Check if SSL is required (DigitalOcean Managed MySQL)
+            $db_ssl = getenv('DB_SSL');
+            $use_ssl = $db_ssl && in_array(strtolower(trim($db_ssl)), ['true', 'required'], true);
+            $flags = $use_ssl ? MYSQLI_CLIENT_SSL : 0;
             
-            if ($result) {
-                while ($row = $result->fetch_array()) {
-                    $table_count++;
-                    if (strpos($row[0], 'wp_') === 0) {
-                        $wp_tables[] = $row[0];
+            if ($use_ssl) {
+                $mysqli->ssl_set(NULL, NULL, NULL, NULL, NULL);
+            }
+            @$mysqli->real_connect($connect_host, $db_user, $db_password, $db_name, $connect_port, NULL, $flags);
+            
+            if ($mysqli->connect_error) {
+                add_check('database_connection', 'error', 'Failed to connect: ' . $mysqli->connect_error, [
+                    'host' => $db_host,
+                    'database' => $db_name,
+                    'user' => $db_user,
+                    'error_code' => $mysqli->connect_errno,
+                    'error_message' => $mysqli->connect_error
+                ]);
+            } else {
+                add_check('database_connection', 'ok', 'Successfully connected to database', [
+                    'host' => $db_host,
+                    'database' => $db_name,
+                    'user' => $db_user,
+                    'mysql_version' => $mysqli->server_info
+                ]);
+                
+                // Check if WordPress tables exist
+                $result = $mysqli->query("SHOW TABLES");
+                $table_count = 0;
+                $wp_tables = [];
+                
+                if ($result) {
+                    while ($row = $result->fetch_array()) {
+                        $table_count++;
+                        if (strpos($row[0], 'wp_') === 0) {
+                            $wp_tables[] = $row[0];
+                        }
+                    }
+                    
+                    if ($table_count === 0) {
+                        add_check('wordpress_installation', 'warning', 'Database is empty - WordPress not yet installed', [
+                            'tables' => 0,
+                            'status' => 'needs_installation'
+                        ]);
+                    } elseif (!empty($wp_tables)) {
+                        add_check('wordpress_installation', 'ok', 'WordPress appears to be installed', [
+                            'total_tables' => $table_count,
+                            'wp_tables' => count($wp_tables),
+                            'sample_tables' => array_slice($wp_tables, 0, 5)
+                        ]);
+                    } else {
+                        add_check('wordpress_installation', 'warning', 'Database has tables but no WordPress tables found', [
+                            'total_tables' => $table_count,
+                            'wp_tables' => 0
+                        ]);
                     }
                 }
                 
-                if ($table_count === 0) {
-                    add_check('wordpress_installation', 'warning', 'Database is empty - WordPress not yet installed', [
-                        'tables' => 0,
-                        'status' => 'needs_installation'
-                    ]);
-                } elseif (!empty($wp_tables)) {
-                    add_check('wordpress_installation', 'ok', 'WordPress appears to be installed', [
-                        'total_tables' => $table_count,
-                        'wp_tables' => count($wp_tables),
-                        'sample_tables' => array_slice($wp_tables, 0, 5)
-                    ]);
-                } else {
-                    add_check('wordpress_installation', 'warning', 'Database has tables but no WordPress tables found', [
-                        'total_tables' => $table_count,
-                        'wp_tables' => 0
-                    ]);
-                }
+                $mysqli->close();
             }
-            
-            $mysqli->close();
+        } catch (Exception $e) {
+            add_check('database_connection', 'error', 'Exception: ' . $e->getMessage(), [
+                'host' => $db_host,
+                'database' => $db_name,
+                'user' => $db_user,
+                'exception' => get_class($e)
+            ]);
         }
-    } catch (Exception $e) {
-        add_check('database_connection', 'error', 'Exception: ' . $e->getMessage(), [
-            'host' => $db_host,
-            'database' => $db_name,
-            'user' => $db_user,
-            'exception' => get_class($e)
-        ]);
     }
 } else {
-    add_check('database_connection', 'error', 'Database configuration incomplete', [
+    add_check('database_connection', 'error', 'Database configuration incomplete - environment variables not set', [
         'has_host' => !empty($db_host),
         'has_user' => !empty($db_user),
         'has_password' => !empty($db_password),
-        'has_name' => !empty($db_name)
+        'has_name' => !empty($db_name),
+        'hint' => 'Set DB_HOST, DB_USER, DB_PASSWORD, DB_NAME in DigitalOcean App Platform > Settings > Environment Variables'
     ]);
 }
 
