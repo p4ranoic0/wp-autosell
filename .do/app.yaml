@@ -1,0 +1,57 @@
+name: wp-autosell
+services:
+  - name: web
+    github:
+      branch: main
+      deploy_on_push: true
+      repo: p4ranoic0/wp-autosell
+    build_command: bash build.sh
+    environment_slug: php
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    http_port: 8080
+    routes:
+      - path: /
+    envs:
+      - key: DB_NAME
+        scope: RUN_TIME
+        type: SECRET
+      - key: DB_USER
+        scope: RUN_TIME
+        type: SECRET
+      - key: DB_PASSWORD
+        scope: RUN_TIME
+        type: SECRET
+      - key: DB_HOST
+        scope: RUN_TIME
+        type: SECRET
+      - key: DB_PREFIX
+        value: wp_
+        scope: RUN_TIME
+      - key: WP_DEBUG
+        value: "false"
+        scope: RUN_TIME
+      - key: AUTH_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: SECURE_AUTH_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: LOGGED_IN_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: NONCE_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: AUTH_SALT
+        scope: RUN_TIME
+        type: SECRET
+      - key: SECURE_AUTH_SALT
+        scope: RUN_TIME
+        type: SECRET
+      - key: LOGGED_IN_SALT
+        scope: RUN_TIME
+        type: SECRET
+      - key: NONCE_SALT
+        scope: RUN_TIME
+        type: SECRET
