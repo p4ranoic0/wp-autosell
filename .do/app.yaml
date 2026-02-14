@@ -1,29 +1,40 @@
 name: wp-autosell
+# Region can be changed based on your geographic location
+# Options: nyc (New York), sfo (San Francisco), ams (Amsterdam), sgp (Singapore), fra (Frankfurt), blr (Bangalore)
+region: nyc
+
 services:
   - name: web
+    # Source
     github:
+      repo: p4ranoic0/wp-autosell
       branch: main
       deploy_on_push: true
-      repo: p4ranoic0/wp-autosell
+    
+    # Build configuration
     build_command: bash build.sh
+    
+    # Environment
     environment_slug: php
+    
+    # HTTP configuration
+    http_port: 8080
+    
+    # Instance configuration
     instance_count: 1
     instance_size_slug: basic-xxs
-    http_port: 8080
-    routes:
-      - path: /
     
-    # PHP Configuration - Required extensions for WordPress
+    # Health check
+    health_check:
+      http_path: /
+      initial_delay_seconds: 30
+      period_seconds: 10
+      timeout_seconds: 5
+      success_threshold: 1
+      failure_threshold: 3
+    
+    # Environment variables - must be configured in DigitalOcean UI
     envs:
-      # PHP Version and Extensions
-      - key: PHP_VERSION
-        value: "8.1"
-        scope: BUILD_AND_RUN_TIME
-      
-      - key: PHP_EXTENSIONS
-        value: "mbstring mysqli curl gd xml zip openssl"
-        scope: BUILD_AND_RUN_TIME
-      
       # Database Configuration (REQUIRED: Must be set in App Platform UI)
       - key: DB_NAME
         scope: RUN_TIME
@@ -41,10 +52,7 @@ services:
       - key: DB_PREFIX
         value: wp_
         scope: RUN_TIME
-      # Optional: WordPress debug mode (defaults to false if not set)
-      - key: WP_DEBUG
-        value: "false"
-        scope: RUN_TIME
+      
       # WordPress Security Keys - REQUIRED: Must be set in App Platform UI
       # Generate at: https://api.wordpress.org/secret-key/1.1/salt/
       - key: AUTH_KEY
@@ -71,3 +79,8 @@ services:
       - key: NONCE_SALT
         scope: RUN_TIME
         type: SECRET
+      
+      # Optional: WordPress debug mode (defaults to false if not set)
+      - key: WP_DEBUG
+        value: "false"
+        scope: RUN_TIME

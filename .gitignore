@@ -1,6 +1,5 @@
 # WordPress specific
 wp-config-local.php
-.htaccess
 
 # WordPress core directories (automatically installed by build.sh during deployment)
 wp-includes/

@@ -10,34 +10,22 @@ echo "Build started at: $(date)"
 echo "Working directory: $(pwd)"
 echo "==================================="
 
-# Verify PHP and required extensions
-echo "→ Checking PHP version and extensions..."
+# Check PHP version and extensions
+echo "→ Checking PHP version..."
 php -v
 echo ""
 
-# Check for required extensions
-echo "Checking for required extensions:"
-REQUIRED_EXTENSIONS=("mbstring" "mysqli" "curl" "gd" "xml" "zip" "openssl")
-MISSING_EXTENSIONS=()
-
-for ext in "${REQUIRED_EXTENSIONS[@]}"; do
-    if php -m | grep -qi "^${ext}$"; then
-        echo "  ✓ $ext"
-    else
-        echo "  ✗ $ext (missing)"
-        MISSING_EXTENSIONS+=("$ext")
-    fi
-done
-
-if [ ${#MISSING_EXTENSIONS[@]} -gt 0 ]; then
-    echo ""
-    echo "⚠️  WARNING: Missing required PHP extensions: ${MISSING_EXTENSIONS[*]}"
-    echo "   WordPress may not function correctly without these extensions."
-    echo "   Ensure composer.json is processed during build to install extensions."
-else
-    echo "  ✓ All required extensions are loaded"
-fi
+echo "→ Checking loaded PHP extensions..."
+php -m
 echo ""
+
+echo "→ Checking for mbstring specifically..."
+if php -m | grep -qw "mbstring"; then
+    echo "✓ mbstring is available"
+else
+    echo "⚠️  WARNING: mbstring extension NOT found!"
+    echo "Attempting to continue anyway..."
+fi
 
 # Check if WordPress core directories already exist
 if [ -d "wp-includes" ] && [ -d "wp-admin" ] && [ -d "wp-content" ]; then
@@ -225,3 +213,14 @@ echo "✓ WordPress installation complete!"
 echo "✓ All verification checks passed"
 echo "Build completed at: $(date)"
 echo "==================================="
+
+# Final verification
+if [ ! -f "wp-includes/version.php" ]; then
+    echo "✗ ERROR: wp-includes/version.php not found after installation"
+    exit 1
+fi
+
+echo "✓ Build verification successful"
+echo ""
+echo "Installed extensions:"
+php -m

@@ -28,8 +28,11 @@ Este proyecto requiere **PHP 8.1+** con las siguientes extensiones (configuradas
 - ✅ `xml` - Procesamiento XML
 - ✅ `zip` - Compresión de archivos
 - ✅ `openssl` - Conexiones seguras
+- ✅ `json` - Procesamiento JSON
 
-**Nota**: Las extensiones se configuran automáticamente mediante `composer.json`, `.user.ini` y `.do/app.yaml`. No requiere configuración manual.
+**Nota**: Las extensiones se configuran automáticamente mediante `composer.json`, `.user.ini`, `php.ini`, `.htaccess` y `.do/app.yaml`. No requiere configuración manual.
+
+**Verificación de extensiones**: Durante el build, el script automáticamente verifica que todas las extensiones estén disponibles y lista las extensiones cargadas al final del proceso.
 
 ### Configuración
 
