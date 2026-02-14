@@ -148,6 +148,8 @@ else
     [ ! -d "wp-content/languages" ] && mkdir -p ./wp-content/languages
     [ ! -d "wp-content/upgrade" ] && mkdir -p ./wp-content/upgrade
     [ ! -d "wp-content/uploads" ] && mkdir -p ./wp-content/uploads
+    # Ensure uploads directory always exists
+    mkdir -p ./wp-content/uploads
     # Copy index.php if it doesn't exist
     [ ! -f "wp-content/index.php" ] && cp /tmp/wordpress/wp-content/index.php ./wp-content/
     echo "✓ Merged wp-content/"
