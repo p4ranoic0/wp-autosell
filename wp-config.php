@@ -68,13 +68,23 @@ define( 'NONCE_SALT',       getenv('NONCE_SALT') ?: 'put your unique phrase here
 
 /**#@-*/
 
-define('WP_HOME', 'https://www.autosell.pe/landing');
-define('WP_SITEURL', 'https://www.autosell.pe/landing');
 
-define('COOKIEPATH', '/landing/');
-define('SITECOOKIEPATH', '/landing/');
-define('ADMIN_COOKIE_PATH', '/landing/');
+$host = $_SERVER['HTTP_HOST'] ?? '';
+$proto = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
 
+if (strpos($host, 'ondigitalocean.app') !== false) {
+  // Acceso directo a App Platform (debug)
+  define('WP_HOME', 'https://app-wp-autosell-term7.ondigitalocean.app');
+  define('WP_SITEURL', 'https://app-wp-autosell-term7.ondigitalocean.app');
+} else {
+  // Producción detrás de Nginx en subruta
+  define('WP_HOME', 'https://www.autosell.pe/landing');
+  define('WP_SITEURL', 'https://www.autosell.pe/landing');
+
+  define('COOKIEPATH', '/landing/');
+  define('SITECOOKIEPATH', '/landing/');
+  define('ADMIN_COOKIE_PATH', '/landing/');
+}
 /**
  * WordPress database table prefix.
  *
