@@ -68,6 +68,13 @@ define( 'NONCE_SALT',       getenv('NONCE_SALT') ?: 'put your unique phrase here
 
 /**#@-*/
 
+define('WP_HOME', 'https://www.autosell.pe/landing');
+define('WP_SITEURL', 'https://www.autosell.pe/landing');
+
+define('COOKIEPATH', '/landing/');
+define('SITECOOKIEPATH', '/landing/');
+define('ADMIN_COOKIE_PATH', '/landing/');
+
 /**
  * WordPress database table prefix.
  *
@@ -87,7 +94,7 @@ $table_prefix = getenv('DB_PREFIX') ?: 'wp_';
  */
 define( 'WP_DEBUG', true );
 define( 'WP_DEBUG_LOG', true );
-define( 'WP_DEBUG_DISPLAY', true );
+define( 'WP_DEBUG_DISPLAY', false );
 @ini_set( 'display_errors', 1 );
 
 /**
