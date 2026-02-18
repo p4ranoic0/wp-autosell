@@ -69,15 +69,23 @@ define( 'NONCE_SALT',       getenv('NONCE_SALT') ?: 'put your unique phrase here
 /**#@-*/
 
 
+$forwarded_host = $_SERVER['HTTP_X_FORWARDED_HOST'] ?? '';
 $host = $_SERVER['HTTP_HOST'] ?? '';
-$proto = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
 
-if (strpos($host, 'ondigitalocean.app') !== false) {
+if (!empty($forwarded_host) && strpos($forwarded_host, 'autosell.pe') !== false) {
+  // Producción: petición llega via Nginx reverse proxy (X-Forwarded-Host presente)
+  define('WP_HOME', 'https://www.autosell.pe/landing');
+  define('WP_SITEURL', 'https://www.autosell.pe/landing');
+
+  define('COOKIEPATH', '/landing/');
+  define('SITECOOKIEPATH', '/landing/');
+  define('ADMIN_COOKIE_PATH', '/landing/');
+} elseif (strpos($host, 'ondigitalocean.app') !== false) {
   // Acceso directo a App Platform (debug)
   define('WP_HOME', 'https://app-wp-autosell-term7.ondigitalocean.app');
   define('WP_SITEURL', 'https://app-wp-autosell-term7.ondigitalocean.app');
 } else {
-  // Producción detrás de Nginx en subruta
+  // Fallback: producción
   define('WP_HOME', 'https://www.autosell.pe/landing');
   define('WP_SITEURL', 'https://www.autosell.pe/landing');
 
